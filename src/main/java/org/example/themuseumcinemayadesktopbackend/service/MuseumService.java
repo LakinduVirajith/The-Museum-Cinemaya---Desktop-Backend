@@ -31,7 +31,7 @@ public List<Task> getfilmByfilmnumber(int filmnumber){
     return repository.findByFilmnumber(filmnumber);
 }
 public Task updatefilm(Task taskRequest){
-   Task extask =repository.findById(taskRequest.getFid()).get();
+   Task extask = repository.findById(taskRequest.getFid()).get();
     extask.setAcknolegement(taskRequest.getAcknolegement());
     extask.setArtdirector(taskRequest.getArtdirector());
     return repository.save(extask);

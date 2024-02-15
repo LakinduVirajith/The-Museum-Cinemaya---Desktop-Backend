@@ -25,6 +25,7 @@ public class filmController {
     private List<Task> grtFilm(){
         return service.findAllFilm();
     }
+
     @GetMapping("/{fid}")
     public Task getFilm(@PathVariable String fid){
         return service.getfilmskByfid(fid);

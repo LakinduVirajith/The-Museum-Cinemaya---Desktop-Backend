@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @EnableMongoRepositories
-public interface museumRepository extends MongoRepository<Task,String> {
+public interface museumRepository extends MongoRepository<Task, String> {
 List<Task> findByFilmnumber(int filmnumber);
 
 
