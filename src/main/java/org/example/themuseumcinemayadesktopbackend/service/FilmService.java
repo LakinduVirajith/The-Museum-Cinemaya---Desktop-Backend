@@ -18,4 +18,6 @@ public interface FilmService {
     ResponseEntity<String> deleteFilm(Integer id);
 
     Page<Film> infiniteScroll(Pageable pageable);
+
+    Page<Film> searchFilms(String entityName, String searchValue, Pageable pageable);
 }
