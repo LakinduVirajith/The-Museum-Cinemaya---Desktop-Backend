@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.themuseumcinemayadesktopbackend.collection.Film;
 import org.example.themuseumcinemayadesktopbackend.service.FilmService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +23,7 @@ public class FilmController {
     private final FilmService filmService;
 
     @PostMapping("/create")
-    @Operation(summary = "create film", description = "record a new film details by providing the necessary details.")
+    @Operation(summary = "create film", description = "record a new film details by providing the necessary details")
     public ResponseEntity<String> createFilm(@RequestBody Film film){
         return filmService.addFilm(film);
     }
@@ -47,5 +50,13 @@ public class FilmController {
     @Operation(summary = "delete film", description = "delete film based on id")
     public ResponseEntity<String> deleteFilm(@PathVariable Integer id){
         return filmService.deleteFilm(id);
+    }
+
+    @GetMapping
+    @Operation(summary = "fetch films with pagination and sorting", description = "retrieve a paginated list of films sorted by film number for the home page")
+    public Page<Film> infiniteScroll(@RequestParam(defaultValue = "0") Integer page,
+                                     @RequestParam(defaultValue = "60") Integer size){
+        Pageable pageable = PageRequest.of(page, size);
+        return filmService.infiniteScroll(pageable);
     }
 }
