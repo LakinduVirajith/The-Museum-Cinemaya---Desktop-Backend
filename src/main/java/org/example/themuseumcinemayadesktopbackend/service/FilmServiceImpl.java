@@ -66,4 +66,31 @@ public class FilmServiceImpl implements FilmService{
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
         return filmRepository.findAll(pageable);
     }
+
+    @Override
+    public Page<Film> searchFilms(String entityName, String searchValue, Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
+
+        // Construct the query based on the selected entity name and search value
+        if ("filmNumber".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByFilmNumberContaining(searchValue, pageable);
+        } else if ("reference".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByReferenceContaining(searchValue, pageable);
+        } else if ("releaseDate".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByReleaseDateContaining(searchValue, pageable);
+        }else if ("filmTitle".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByFilmTitleContaining(searchValue, pageable);
+        }else if ("synopsis".equalsIgnoreCase(entityName)) {
+            return filmRepository.findBySynopsisContaining(searchValue, pageable);
+        }else if ("production".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByProductionContaining(searchValue, pageable);
+        }else if ("director".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByDirectorContaining(searchValue, pageable);
+        }else if ("producer".equalsIgnoreCase(entityName)) {
+            return filmRepository.findByProducerContaining(searchValue, pageable);
+        }
+
+        // Default case: if no specific entity name is selected, return all films
+        return filmRepository.findAll(pageable);
+    }
 }

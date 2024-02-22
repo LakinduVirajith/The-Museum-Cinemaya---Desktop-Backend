@@ -40,7 +40,7 @@ public class FilmController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/update")
     @Operation(summary = "update film", description = "update film based on id")
     public ResponseEntity<String> updateFilm(@RequestBody Film film){
         return filmService.updateFilm(film);
@@ -52,11 +52,21 @@ public class FilmController {
         return filmService.deleteFilm(id);
     }
 
-    @GetMapping
+    @GetMapping("/scroll")
     @Operation(summary = "fetch films with pagination and sorting", description = "retrieve a paginated list of films sorted by film number for the home page")
     public Page<Film> infiniteScroll(@RequestParam(defaultValue = "0") Integer page,
                                      @RequestParam(defaultValue = "60") Integer size){
         Pageable pageable = PageRequest.of(page, size);
         return filmService.infiniteScroll(pageable);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "search films by entity name with pagination and sorting", description = "retrieve a paginated list of films sorted by film number, with optional search criteria by entity name")
+    public Page<Film> searchFilms(@RequestParam String entityName,
+                                  @RequestParam String searchValue,
+                                  @RequestParam(defaultValue = "0") Integer page,
+                                  @RequestParam(defaultValue = "60") Integer size){
+        Pageable pageable = PageRequest.of(page, size);
+        return filmService.searchFilms(entityName, searchValue, pageable);
     }
 }
