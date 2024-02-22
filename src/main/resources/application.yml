@@ -1,5 +1,28 @@
+server:
+  port: 8080
+
 spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
   data:
     mongodb:
-      uri : mongodb+srv://anushka:anushka@atlascluster.swfkjzc.mongodb.net/?retryWrites=true&w=majority
-      database : Task
+      uri: uri
+      database: The-Museum-Cinemaya-Dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      uri: uri
+      database: The-Museum-Cinemaya-Prod
