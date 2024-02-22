@@ -3,6 +3,10 @@ package org.example.themuseumcinemayadesktopbackend.service;
 import lombok.RequiredArgsConstructor;
 import org.example.themuseumcinemayadesktopbackend.collection.Film;
 import org.example.themuseumcinemayadesktopbackend.repository.FilmRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,12 +27,8 @@ public class FilmServiceImpl implements FilmService{
         if(existingFilm.isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("A film with the given number already exists");
         }else{
-            try {
-                filmRepository.save(film);
-                return ResponseEntity.status(HttpStatus.CREATED).body("Film created successfully");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create the film");
-            }
+            filmRepository.save(film);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Film created successfully");
         }
     }
 
@@ -59,5 +59,11 @@ public class FilmServiceImpl implements FilmService{
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found");
         }
+    }
+
+    @Override
+    public Page<Film> infiniteScroll(Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
+        return filmRepository.findAll(pageable);
     }
 }
