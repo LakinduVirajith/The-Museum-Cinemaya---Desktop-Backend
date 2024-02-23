@@ -13,7 +13,7 @@ spring:
       on-profile: dev
   data:
     mongodb:
-      uri: uri
+      uri: mongodb+srv://lakindu:lakindu@atlascluster.swfkjzc.mongodb.net/?retryWrites=true&w=majority
       database: The-Museum-Cinemaya-Dev
 
 ---

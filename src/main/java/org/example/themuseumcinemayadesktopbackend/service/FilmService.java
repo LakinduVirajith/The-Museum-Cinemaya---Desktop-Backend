@@ -1,6 +1,7 @@
 package org.example.themuseumcinemayadesktopbackend.service;
 
 import org.example.themuseumcinemayadesktopbackend.collection.Film;
+import org.example.themuseumcinemayadesktopbackend.dto.FilmDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,11 @@ public interface FilmService {
 
     ResponseEntity<String> deleteFilm(Integer id);
 
-    Page<Film> infiniteScroll(Pageable pageable);
+    ResponseEntity<String> setAsLocked(Integer id);
 
-    Page<Film> searchFilms(String entityName, String searchValue, Pageable pageable);
+    ResponseEntity<String> setAsUnlocked(Integer id);
+
+    Page<FilmDTO> infiniteScroll(Pageable pageable);
+
+    Page<FilmDTO> searchFilms(String entityName, String searchValue, Pageable pageable);
 }
