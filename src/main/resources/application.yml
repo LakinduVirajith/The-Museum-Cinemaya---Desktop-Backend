@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 443
 
 spring:
   profiles:
@@ -13,7 +13,7 @@ spring:
       on-profile: dev
   data:
     mongodb:
-      uri: mongodb+srv://lakindu:lakindu@atlascluster.swfkjzc.mongodb.net/?retryWrites=true&w=majority
+      uri: uri
       database: The-Museum-Cinemaya-Dev
 
 ---
