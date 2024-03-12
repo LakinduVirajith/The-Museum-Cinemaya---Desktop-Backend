@@ -2,6 +2,7 @@ package org.example.themuseumcinemayadesktopbackend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.themuseumcinemayadesktopbackend.collection.Film;
+import org.example.themuseumcinemayadesktopbackend.dto.FilmDTO;
 import org.example.themuseumcinemayadesktopbackend.repository.FilmRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,26 +55,74 @@ public class FilmServiceImpl implements FilmService{
         Optional<Film> existingFilm = filmRepository.findByFilmNumber(id);
 
         if(existingFilm.isPresent()){
-            filmRepository.deleteByFilmNumber(id);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Film successfully deleted. Film ID: " + existingFilm.get().getFilmNumber());
+            if(existingFilm.get().getIsLocked()){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The film is locked and cannot be deleted.");
+            }else{
+                filmRepository.deleteByFilmNumber(id);
+                return ResponseEntity.status(HttpStatus.OK).body("Film successfully deleted. Film number: " + String.format("%05d", existingFilm.get().getFilmNumber()));
+            }
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found");
         }
     }
 
     @Override
-    public Page<Film> infiniteScroll(Pageable pageable) {
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
-        return filmRepository.findAll(pageable);
+    public ResponseEntity<String> setAsLocked(Integer id) {
+        Optional<Film> existingFilmOptional  = filmRepository.findByFilmNumber(id);
+
+        if(existingFilmOptional.isPresent()){
+            Film existingFilm = existingFilmOptional.get();
+
+            if(existingFilm.getIsLocked()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("The film is already locked");
+            }else{
+                existingFilm.setIsLocked(true);
+                filmRepository.save(existingFilm);
+                return ResponseEntity.status(HttpStatus.OK).body("Film successfully set as locked");
+            }
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found with film number: " + String.format("%05d", id));
+        }
     }
 
     @Override
-    public Page<Film> searchFilms(String entityName, String searchValue, Pageable pageable) {
+    public ResponseEntity<String> setAsUnlocked(Integer id) {
+        Optional<Film> existingFilmOptional  = filmRepository.findByFilmNumber(id);
+
+        if(existingFilmOptional.isPresent()){
+            Film existingFilm = existingFilmOptional.get();
+
+            if(!existingFilm.getIsLocked()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("The film is already unlocked");
+            }else{
+                existingFilm.setIsLocked(false);
+                filmRepository.save(existingFilm);
+                return ResponseEntity.status(HttpStatus.OK).body("Film successfully set as unlocked");
+            }
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found with film number: " + String.format("%05d", id));
+        }
+    }
+
+    @Override
+    public Page<FilmDTO> infiniteScroll(Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
+        return getFilmDTOS(pageable);
+    }
+
+    @Override
+    public Page<FilmDTO> searchFilms(String entityName, String searchValue, Pageable pageable) {
         pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("filmNumber"));
 
         // Construct the query based on the selected entity name and search value
         if ("filmNumber".equalsIgnoreCase(entityName)) {
-            return filmRepository.findByFilmNumberContaining(searchValue, pageable);
+            int value;
+            try{
+                value = Integer.parseInt(searchValue);
+                return filmRepository.findByFilmNumber(value, pageable);
+            }catch (Exception e){
+                return getFilmDTOS(pageable);
+            }
         } else if ("reference".equalsIgnoreCase(entityName)) {
             return filmRepository.findByReferenceContaining(searchValue, pageable);
         } else if ("releaseDate".equalsIgnoreCase(entityName)) {
@@ -91,6 +140,21 @@ public class FilmServiceImpl implements FilmService{
         }
 
         // Default case: if no specific entity name is selected, return all films
-        return filmRepository.findAll(pageable);
+        return getFilmDTOS(pageable);
+    }
+
+    private Page<FilmDTO> getFilmDTOS(Pageable pageable) {
+        Page<Film> films = filmRepository.findAll(pageable);
+
+        return films.map(film -> FilmDTO.builder()
+                .filmNumber(film.getFilmNumber())
+                .reference(film.getReference())
+                .releaseDate(film.getReleaseDate())
+                .filmTitle(film.getFilmTitle())
+                .synopsis(film.getSynopsis())
+                .production(film.getProduction())
+                .director(film.getDirector())
+                .producer(film.getProducer())
+                .build());
     }
 }

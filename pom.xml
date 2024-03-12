@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.example</groupId>
 	<artifactId>The-Museum-Cinemaya--Desktop-Backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<name>The-Museum-Cinemaya--Desktop-Backend</name>
 	<description>The-Museum-Cinemaya--Desktop-Backend</description>
 	<properties>

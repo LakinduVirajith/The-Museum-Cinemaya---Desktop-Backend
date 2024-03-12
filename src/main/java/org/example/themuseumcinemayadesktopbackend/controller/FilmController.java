@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.themuseumcinemayadesktopbackend.collection.Film;
+import org.example.themuseumcinemayadesktopbackend.dto.FilmDTO;
 import org.example.themuseumcinemayadesktopbackend.service.FilmService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,14 +30,14 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "fetch film", description = "fetch film based on id")
+    @Operation(summary = "get film", description = "retrieve film based on id")
     public ResponseEntity<?> getFilm(@PathVariable Integer id){
         Optional<Film> optionalFilm = filmService.getFilmById(id);
 
         if (optionalFilm.isPresent()) {
             return ResponseEntity.ok(optionalFilm.get());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Film not found with film number: " + String.format("%05d", id));
         }
     }
 
@@ -52,17 +53,29 @@ public class FilmController {
         return filmService.deleteFilm(id);
     }
 
+    @PutMapping("/set/locked/{id}")
+    @Operation(summary = "set as locked film", description = "set as locked film based on id")
+    public ResponseEntity<String> setAsLocked(@PathVariable Integer id){
+        return filmService.setAsLocked(id);
+    }
+
+    @PutMapping("/set/unlocked/{id}")
+    @Operation(summary = "set as unlocked film", description = "set as unlocked film based on id")
+    public ResponseEntity<String> setAsUnlocked(@PathVariable Integer id){
+        return filmService.setAsUnlocked(id);
+    }
+
     @GetMapping("/scroll")
-    @Operation(summary = "fetch films with pagination and sorting", description = "retrieve a paginated list of films sorted by film number for the home page")
-    public Page<Film> infiniteScroll(@RequestParam(defaultValue = "0") Integer page,
-                                     @RequestParam(defaultValue = "60") Integer size){
+    @Operation(summary = "get films with pagination and sorting", description = "retrieve a paginated list of films sorted by film number for the home page")
+    public Page<FilmDTO> infiniteScroll(@RequestParam(defaultValue = "0") Integer page,
+                                        @RequestParam(defaultValue = "60") Integer size){
         Pageable pageable = PageRequest.of(page, size);
         return filmService.infiniteScroll(pageable);
     }
 
     @GetMapping("/search")
     @Operation(summary = "search films by entity name with pagination and sorting", description = "retrieve a paginated list of films sorted by film number, with optional search criteria by entity name")
-    public Page<Film> searchFilms(@RequestParam String entityName,
+    public Page<FilmDTO> searchFilms(@RequestParam String entityName,
                                   @RequestParam String searchValue,
                                   @RequestParam(defaultValue = "0") Integer page,
                                   @RequestParam(defaultValue = "60") Integer size){
