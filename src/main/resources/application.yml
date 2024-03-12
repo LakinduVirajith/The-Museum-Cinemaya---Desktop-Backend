@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    active: dev
+
+---
+
+server:
+  port: 8080
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      uri: mongo-uri
+      database: The-Museum-Cinemaya-Dev
+
+---
+
+server:
+  port: 9090
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      uri: mongo-uri
+      database: The-Museum-Cinemaya-Prod
